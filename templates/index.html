@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Chatbot - FinanceBench AI Assistant</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 bg-dark border-end p-0">
+                <div class="d-flex flex-column h-100">
+                    <div class="p-4 border-bottom">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-line me-2 text-primary"></i>
+                            Financial AI
+                        </h4>
+                        <small class="text-muted">FinanceBench Assistant</small>
+                    </div>
+                    
+                    <div class="p-3">
+                        <h6 class="text-muted mb-3">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-secondary btn-sm quick-action" 
+                                    data-message="What is Apple's latest revenue?">
+                                <i class="fas fa-dollar-sign me-2"></i>Revenue Query
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm quick-action" 
+                                    data-message="Show me Microsoft's profit margins for the last 4 quarters">
+                                <i class="fas fa-percent me-2"></i>Margin Analysis
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm quick-action" 
+                                    data-message="Forecast Tesla's revenue for next 3 quarters">
+                                <i class="fas fa-crystal-ball me-2"></i>Revenue Forecast
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm quick-action" 
+                                    data-message="Compare Amazon and Google earnings per share">
+                                <i class="fas fa-balance-scale me-2"></i>EPS Comparison
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 border-top mt-auto">
+                        <h6 class="text-muted mb-3">Features</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="fas fa-database me-2 text-info"></i>FinanceBench Integration</li>
+                            <li class="mb-2"><i class="fas fa-search me-2 text-success"></i>KPI Extraction</li>
+                            <li class="mb-2"><i class="fas fa-brain me-2 text-warning"></i>RAG System</li>
+                            <li class="mb-2"><i class="fas fa-chart-trend-up me-2 text-danger"></i>Financial Forecasting</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="col-lg-9 col-md-8 d-flex flex-column h-100">
+                <!-- Chat Header -->
+                <div class="border-bottom p-3 bg-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">Financial Assistant</h5>
+                            <small class="text-muted" id="connection-status">
+                                <i class="fas fa-circle text-success me-1"></i>Connected
+                            </small>
+                        </div>
+                        <button class="btn btn-outline-secondary btn-sm" id="clear-chat">
+                            <i class="fas fa-trash me-2"></i>Clear Chat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="flex-grow-1 p-3 overflow-auto" id="chat-messages">
+                    <div class="welcome-message">
+                        <div class="card bg-primary bg-opacity-10 border-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-robot fa-3x text-primary mb-3"></i>
+                                <h5>Welcome to Financial AI Assistant</h5>
+                                <p class="mb-0">Ask me about financial data, KPIs, forecasts, or company analysis. 
+                                I can help you with FinanceBench queries, extract key performance indicators, 
+                                and provide financial forecasts.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="px-3" id="typing-indicator" style="display: none;">
+                    <div class="d-flex align-items-center text-muted">
+                        <div class="typing-animation me-2">
+                            <span></span><span></span><span></span>
+                        </div>
+                        AI is thinking...
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="border-top p-3 bg-dark">
+                    <form id="message-form" class="d-flex gap-2">
+                        <div class="flex-grow-1">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="message-input" 
+                                   placeholder="Ask about financial data, KPIs, or forecasts..."
+                                   autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Modal -->
+    <div class="modal fade" id="chartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="chartModalLabel">Financial Chart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="financial-chart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>
