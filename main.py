@@ -1,3 +1,4 @@
+import os
 from app import app, socketio
 import logging
 from rag_system import RAGSystem
@@ -23,6 +24,6 @@ if __name__ == '__main__':
         rag.ingest_jsonl_evidence_file(jsonl_path) 
     except Exception as e:
         logging.error(f"Error ingesting JSONL evidence: {str(e)}")
-        
+ 
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)
         

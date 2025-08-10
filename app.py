@@ -2,13 +2,10 @@ import os
 import logging
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-class Base(DeclarativeBase):
-    pass
-db = SQLAlchemy(model_class=Base)
+from db_core import db
+
 
 # Create the app
 app = Flask(__name__)
@@ -29,7 +26,10 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", ping_i
 
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("findocgpt")
+logger.setLevel(logging.INFO)
+
 
 with app.app_context():
     import models

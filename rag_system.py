@@ -9,7 +9,7 @@ from pypdf import PdfReader
 from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 from models import VectorEmbedding
-from app import db
+from db_core import db
 
 def _guess_company_from_filename(name: str) -> Optional[str]:
     m = re.match(r"([A-Z]{1,6})[_\-].*", name)

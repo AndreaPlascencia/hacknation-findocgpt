@@ -28,6 +28,13 @@ class ChatBot:
             
             # Get relevant context using RAG
             rag_context = self.rag_system.get_relevant_context(user_message)
+
+            # Bandera para el cliente / logs
+            if rag_context:
+                rag_used = bool(rag_context and rag_context.strip())
+                logging.info(f"RAG used={rag_used} query='{user_message[:80]}'")
+            else:
+                logging.info(f"RAG not used")
             
             # Generate main response
             main_response = self._generate_response(user_message, intent, rag_context)
