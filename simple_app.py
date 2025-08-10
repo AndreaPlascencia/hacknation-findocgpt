@@ -51,6 +51,15 @@ def handle_chat():
         
         logging.info(f'Received message: {user_message}')
         
+        # Initialize RAG system with financial knowledge if needed
+        from models import VectorEmbedding
+        if VectorEmbedding.query.count() == 0:
+            try:
+                chatbot.rag_system.initialize_financial_knowledge()
+                logging.info("RAG system initialized from chat endpoint")
+            except Exception as e:
+                logging.error(f"Error initializing RAG in chat endpoint: {str(e)}")
+        
         # Process message through chatbot
         response = chatbot.process_message(user_message)
         

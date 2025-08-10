@@ -4,6 +4,14 @@
 
 This is a comprehensive financial chatbot application built with Flask and Socket.IO that provides intelligent financial analysis, KPI extraction, forecasting, and real-time chat capabilities. The system integrates with FinanceBench for financial data retrieval and uses OpenAI for natural language processing and embeddings. The application serves as an AI-powered assistant for financial queries, capable of extracting key performance indicators, generating forecasts, and providing contextual responses using a RAG (Retrieval-Augmented Generation) system.
 
+## Recent Changes (August 2025)
+
+✓ **Fixed RAG System Integration**: Resolved SQLAlchemy import conflicts by ensuring all models import from `app.py` instead of `db_core.py`
+✓ **Financial Knowledge Base**: Successfully initialized RAG system with 10 comprehensive financial knowledge entries covering major companies (Apple, Microsoft, Amazon, Google, Tesla, 3M) and financial concepts
+✓ **Real-time Context Retrieval**: RAG system now properly provides contextual information for financial queries (verified with logs showing "RAG used=True")
+✓ **Database Consistency**: Fixed multiple SQLAlchemy instances issue that was causing "not registered with this SQLAlchemy instance" errors
+✓ **English Interface**: Completed conversion from Spanish to English interface as requested
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
