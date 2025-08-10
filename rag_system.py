@@ -37,6 +37,7 @@ class RAGSystem:
             logging.error(f"[RAG] Error creando embedding: {e}")
             return None
 
+    #====== Almacenamiento en BD ======
     def _save_embedding(self, text: str, embedding: np.ndarray, metadata: Dict[str, Any], content_type: str = "document"):
         """Guarda chunk + embedding en la BD"""
         vector_embedding = VectorEmbedding(
