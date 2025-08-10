@@ -1,7 +1,7 @@
 import os
+import json
 import logging
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -10,7 +10,6 @@ class Base(DeclarativeBase):
     pass
 
 db = SQLAlchemy(model_class=Base)
-
 
 # Create the app
 app = Flask(__name__)
@@ -26,11 +25,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 
 # Initialize extensions
 db.init_app(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', ping_interval=25, ping_timeout=60, logger=False, engineio_logger=False)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
-
 
 with app.app_context():
     import models
@@ -44,47 +41,54 @@ chatbot = ChatBot()
 @app.route('/')
 def index():
     """Main chat interface"""
-    return render_template('index.html')
+    return render_template('simple_index.html')
 
-@socketio.on('connect')
-def handle_connect():
-    """Handle client connection"""
-    logging.info('Client connected')
-    emit('status', {'msg': 'Connected to Financial Chatbot'})
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    """Handle client disconnection"""
-    logging.info('Client disconnected')
-
-@socketio.on('message')
-def handle_message(data):
-    """Handle incoming chat messages"""
+@app.route('/api/chat', methods=['POST'])
+def handle_chat():
+    """Handle chat API requests"""
     try:
-        logging.info("Tryng to handle message")
+        data = request.get_json()
         user_message = data.get('message', '')
-        logging.info(f'Received message: {user_message}')
         
-        # Emit typing indicator
-        emit('typing', {'typing': True})
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+        
+        logging.info(f'Received message: {user_message}')
         
         # Process message through chatbot
         response = chatbot.process_message(user_message)
         
-        # Stop typing indicator and send response
-        emit('typing', {'typing': False})
-        emit('response', response)
+        return jsonify(response)
         
     except Exception as e:
         logging.error(f'Error processing message: {str(e)}')
-        emit('typing', {'typing': False})
-        emit('error', {'message': f'Error processing your request: {str(e)}'})
+        return jsonify({
+            'error': True,
+            'message': f'Error processing your request: {str(e)}'
+        }), 500
+
+@app.route('/api/status')
+def status():
+    """Health check endpoint"""
+    return jsonify({'status': 'ok', 'message': 'Financial Chatbot is running'})
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('index.html'), 404
+    return render_template('simple_index.html'), 404
 
 @app.errorhandler(500)
 def internal_error(error):
     logging.error(f'Internal error: {str(error)}')
-    return render_template('index.html'), 500
+    return jsonify({'error': 'Internal server error'}), 500
+
+if __name__ == '__main__':
+    # Initialize RAG system with basic financial knowledge
+    try:
+        from rag_system import RAGSystem
+        rag = RAGSystem()
+        rag.initialize_financial_knowledge()
+        logging.info("RAG system initialized with financial knowledge")
+    except Exception as e:
+        logging.error(f"Error initializing RAG system: {str(e)}")
+    
+    app.run(host='0.0.0.0', port=5000, debug=False)

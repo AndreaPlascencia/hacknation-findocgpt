@@ -105,7 +105,7 @@ class KPIExtractor:
             clean_value = re.sub(r'[,\s]', '', value_str)
             return float(clean_value)
         except (ValueError, TypeError):
-            return None
+            return 0.0
     
     def _extract_companies(self, text: str) -> List[Dict[str, Any]]:
         """Extract company names and stock symbols"""

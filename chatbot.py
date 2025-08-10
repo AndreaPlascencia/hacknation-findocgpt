@@ -99,7 +99,11 @@ class ChatBot:
                 response_format={"type": "json_object"}
             )
             
-            return json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content
+            if content:
+                return json.loads(content)
+            else:
+                raise ValueError("Empty response from OpenAI")
             
         except Exception as e:
             logging.error(f"Error analyzing intent: {str(e)}")

@@ -72,13 +72,14 @@ class FinanceBenchClient:
         
         return params
     
-    def _get_cached_or_fetch_data(self, params: Dict[str, Any]) -> List[FinancialData]:
+    def _get_cached_or_fetch_data(self, params: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Get data from cache or fetch from external source"""
         try:
             # Check cache first
             cached_data = self._get_from_cache(params)
             if cached_data:
-                return cached_data
+                # Convert SQLAlchemy objects to dicts
+                return [self._financial_data_to_dict(item) for item in cached_data]
             
             # Fetch from external source (simulated for demo)
             fresh_data = self._fetch_external_data(params)
@@ -277,5 +278,17 @@ class FinanceBenchClient:
         except Exception as e:
             logging.error(f"Error generating summary stats: {str(e)}")
             return {}
+    
+    def _financial_data_to_dict(self, financial_data) -> Dict[str, Any]:
+        """Convert FinancialData SQLAlchemy object to dictionary"""
+        return {
+            'company_symbol': financial_data.company_symbol,
+            'metric_name': financial_data.metric_name,
+            'metric_value': financial_data.metric_value,
+            'period': financial_data.period,
+            'year': financial_data.year,
+            'quarter': financial_data.quarter,
+            'data_source': financial_data.data_source
+        }
     
 from datetime import timedelta

@@ -1,35 +1,36 @@
-/* Custom styles for Financial Chatbot */
+/* Estilos personalizados para el chatbot financiero */
 
-.h-100 {
-    height: 100vh !important;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* Typing animation */
+/* Animación de escritura */
 .typing-animation {
     display: inline-flex;
     gap: 2px;
 }
 
 .typing-animation span {
-    height: 6px;
-    width: 6px;
+    width: 4px;
+    height: 4px;
     background-color: var(--bs-secondary);
     border-radius: 50%;
-    display: inline-block;
-    animation: typing 1.4s infinite ease-in-out both;
-}
-
-.typing-animation span:nth-child(1) {
-    animation-delay: -0.32s;
+    animation: typing 1.4s infinite ease-in-out;
 }
 
 .typing-animation span:nth-child(2) {
-    animation-delay: -0.16s;
+    animation-delay: 0.2s;
+}
+
+.typing-animation span:nth-child(3) {
+    animation-delay: 0.4s;
 }
 
 @keyframes typing {
     0%, 80%, 100% {
-        transform: scale(0);
+        transform: scale(0.8);
         opacity: 0.5;
     }
     40% {
@@ -38,12 +39,19 @@
     }
 }
 
-/* Chat messages styling */
-.message {
-    animation: fadeInUp 0.3s ease-out;
+/* Área de mensajes */
+#chat-messages {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
-@keyframes fadeInUp {
+/* Estilos de mensajes */
+.message {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
     from {
         opacity: 0;
         transform: translateY(10px);
@@ -54,142 +62,207 @@
     }
 }
 
-/* Avatar styling */
+.user-message .card {
+    max-width: 85%;
+    margin-left: auto;
+}
+
+.bot-message .card {
+    max-width: 95%;
+}
+
+/* Avatar del bot */
 .avatar {
-    flex-shrink: 0;
+    min-width: 40px;
+    min-height: 40px;
 }
 
-/* Scrollbar styling for chat messages */
-#chat-messages {
-    scrollbar-width: thin;
-    scrollbar-color: var(--bs-secondary) transparent;
+/* Botones de acción rápida */
+.quick-action {
+    transition: all 0.2s ease;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
+.quick-action:hover {
+    transform: translateX(5px);
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+
+/* Área del sidebar */
+.col-lg-3, .col-md-4 {
+    min-height: 100vh;
+}
+
+/* Scrollbars personalizados */
 #chat-messages::-webkit-scrollbar {
     width: 6px;
 }
 
 #chat-messages::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--bs-dark);
 }
 
 #chat-messages::-webkit-scrollbar-thumb {
-    background-color: var(--bs-secondary);
+    background: var(--bs-secondary);
     border-radius: 3px;
 }
 
 #chat-messages::-webkit-scrollbar-thumb:hover {
-    background-color: var(--bs-secondary-dark);
+    background: var(--bs-primary);
 }
 
-/* Quick action buttons hover effect */
-.quick-action {
-    transition: all 0.3s ease;
-}
-
-.quick-action:hover {
-    transform: translateX(5px);
-}
-
-/* Message content formatting */
-.message-content ul {
-    margin-bottom: 0;
-}
-
-.message-content li {
-    padding: 2px 0;
-}
-
-/* Chart modal styling */
-#chartModal .modal-body {
-    padding: 20px;
-}
-
-#financial-chart {
-    max-height: 400px;
-}
-
-/* Connection status styling */
-#connection-status {
-    font-size: 0.875rem;
-}
-
-/* Welcome message styling */
-.welcome-message {
-    margin-bottom: 2rem;
-}
-
-/* Input focus styling */
-#message-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    border-color: var(--bs-primary);
-}
-
-/* Send button styling */
-#send-button {
-    min-width: 50px;
-}
-
-/* Responsive adjustments */
+/* Responsive design */
 @media (max-width: 768px) {
-    .col-md-4 {
+    .col-lg-3, .col-md-4 {
         display: none;
     }
     
-    .col-md-8 {
-        width: 100%;
+    .user-message .card {
+        max-width: 95%;
     }
     
-    .message .card {
-        max-width: 95% !important;
+    #chat-messages {
+        max-height: calc(100vh - 150px);
     }
 }
 
-/* Custom card styling for dark theme */
-.card {
-    border: 1px solid rgba(255, 255, 255, 0.125);
+/* Estilo para indicadores de estado */
+#connection-status .fas {
+    animation: pulse 2s infinite;
 }
 
-.bg-primary.bg-opacity-10 {
-    background-color: rgba(13, 110, 253, 0.1) !important;
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
-.bg-secondary.bg-opacity-20 {
-    background-color: rgba(108, 117, 125, 0.2) !important;
+/* Estilo para el formulario de mensaje */
+#message-form {
+    padding: 1rem;
+    background: var(--bs-dark);
+    border-radius: 0.375rem;
 }
 
-/* Loading states */
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+#message-input {
+    border-radius: 1.5rem;
+    border: 1px solid var(--bs-secondary);
+    padding: 0.75rem 1rem;
 }
 
-/* Error message styling */
-.error-message {
-    border-left: 4px solid var(--bs-danger);
+#message-input:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#send-button {
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mejorar espaciado de listas */
+.message-content ul {
     padding-left: 1rem;
 }
 
-/* Success message styling */
-.success-message {
-    border-left: 4px solid var(--bs-success);
-    padding-left: 1rem;
+.message-content li {
+    margin-bottom: 0.25rem;
 }
 
-/* KPI badges */
-.kpi-badge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    margin: 0.125rem;
+/* Estilos para tablas de datos financieros */
+.financial-table {
+    font-size: 0.9rem;
+}
+
+.financial-table th {
+    background-color: var(--bs-primary);
+    color: white;
+    border: none;
+}
+
+.financial-table td {
+    border-color: var(--bs-secondary);
+}
+
+/* Badges para métricas */
+.metric-badge {
     background-color: var(--bs-info);
     color: white;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.8rem;
 }
 
-/* Chart container */
-.chart-container {
-    position: relative;
-    height: 300px;
-    margin: 1rem 0;
+/* Efectos hover para elementos interactivos */
+.card:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
+}
+
+/* Estilos específicos para modales de gráficos */
+.modal-content {
+    background-color: var(--bs-dark);
+    border: 1px solid var(--bs-secondary);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--bs-secondary);
+}
+
+/* Mejoras para el área de gráfico */
+#financial-chart {
+    background-color: white;
+    border-radius: 0.375rem;
+}
+
+/* Estilo para elementos de error */
+.error-message {
+    color: var(--bs-danger);
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid var(--bs-danger);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+/* Estilo para elementos de éxito */
+.success-message {
+    color: var(--bs-success);
+    background-color: rgba(25, 135, 84, 0.1);
+    border: 1px solid var(--bs-success);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+}
+
+/* Mejoras para la barra lateral */
+.sidebar-feature-list {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.375rem;
+    padding: 1rem;
+}
+
+/* Transiciones suaves */
+* {
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* Eliminar outline de bootstrap en elementos de enfoque */
+.btn:focus,
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }

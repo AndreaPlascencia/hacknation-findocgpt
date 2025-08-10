@@ -1,6 +1,6 @@
 from db_core import db
 from datetime import datetime
-from sqlalchemy import Text, DateTime, Float, Integer, String, Index
+from sqlalchemy import Text, DateTime, Float, Integer, String
 
 class ChatSession(db.Model):
     """Model to store chat sessions"""
