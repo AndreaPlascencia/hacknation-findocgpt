@@ -7,6 +7,7 @@ This is a comprehensive financial chatbot application built with Flask and Socke
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Interface language: English (updated from Spanish as requested).
 
 ## System Architecture
 

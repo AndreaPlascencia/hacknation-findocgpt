@@ -78,11 +78,12 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    # Initialize RAG system
+    # Initialize RAG system with financial knowledge
     try:
         from rag_system import RAGSystem
         rag = RAGSystem()
-        logging.info("RAG system initialized")
+        rag.initialize_financial_knowledge()
+        logging.info("RAG system initialized with financial knowledge")
     except Exception as e:
         logging.error(f"Error initializing RAG system: {str(e)}")
     

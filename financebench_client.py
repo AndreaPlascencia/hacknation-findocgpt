@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 from models import FinancialData
-from db_core import db
+from app import db
 
 class FinanceBenchClient:
     def __init__(self):

@@ -168,6 +168,13 @@ class RAGSystem:
     # ====== Recuperación de contexto ======
 
     def get_relevant_context(self, query: str, top_k: int = 3) -> str:
+        # Initialize financial knowledge if not already done
+        try:
+            if VectorEmbedding.query.count() == 0:
+                self.initialize_financial_knowledge()
+        except Exception as e:
+            logging.error(f"[RAG] Error initializing knowledge: {str(e)}")
+        
         query_embedding = self._get_embedding(query)
         if query_embedding is None:
             return ""
@@ -206,3 +213,76 @@ class RAGSystem:
                 context_part += f" ({metadata_str})"
             context_parts.append(context_part)
         return "\n\n".join(context_parts)
+    
+    def initialize_financial_knowledge(self):
+        """Initialize the RAG system with basic financial knowledge"""
+        try:
+            # Check if we already have embeddings
+            existing_count = VectorEmbedding.query.count()
+            if existing_count > 0:
+                logging.info(f"[RAG] Already initialized with {existing_count} embeddings")
+                return
+            
+            logging.info("[RAG] Initializing with financial knowledge base")
+            
+            # Add fundamental financial knowledge
+            financial_knowledge = [
+                {
+                    "content": "Apple Inc. (AAPL) is a technology company that designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories. Key financial metrics include iPhone revenue (typically 50-60% of total revenue), Services revenue (growing segment including App Store, iCloud, Apple Music), and gross margins typically around 37-42%. Apple reports quarterly earnings showing revenue, net income, earnings per share (EPS), and guidance.",
+                    "metadata": {"company": "AAPL", "category": "overview", "sector": "technology"}
+                },
+                {
+                    "content": "Microsoft Corporation (MSFT) revenue streams include Productivity and Business Processes (Office 365, Microsoft Teams, LinkedIn), Intelligent Cloud (Azure, Windows Server, SQL Server), and More Personal Computing (Windows, Xbox, Surface). Azure cloud revenue has been growing 40-50% year-over-year. Operating margins are typically 35-42%.",
+                    "metadata": {"company": "MSFT", "category": "overview", "sector": "technology"}
+                },
+                {
+                    "content": "Amazon.com Inc. (AMZN) operates in multiple segments: North America retail, International retail, and Amazon Web Services (AWS). AWS is the most profitable segment with operating margins around 30%, while retail has lower margins around 1-5%. Key metrics include net sales, operating income, free cash flow, and Prime membership growth.",
+                    "metadata": {"company": "AMZN", "category": "overview", "sector": "e-commerce"}
+                },
+                {
+                    "content": "Alphabet Inc. (GOOGL) revenue primarily comes from Google Search advertising, YouTube advertising, Google Cloud, and Other Bets (including Waymo). Search advertising typically represents 50-60% of total revenue. Operating margins are usually 20-25%. Key metrics include revenue per search, traffic acquisition costs (TAC), and cloud revenue growth.",
+                    "metadata": {"company": "GOOGL", "category": "overview", "sector": "technology"}
+                },
+                {
+                    "content": "Tesla Inc. (TSLA) revenue comes from Automotive sales (Model S, 3, X, Y), Energy generation and storage (solar panels, Powerwall), and Services. Automotive gross margins are typically 18-25%. Key metrics include vehicle deliveries, production numbers, average selling price, and energy deployment.",
+                    "metadata": {"company": "TSLA", "category": "overview", "sector": "automotive"}
+                },
+                {
+                    "content": "3M Company (MMM) operates in four business segments: Safety and Industrial, Transportation and Electronics, Health Care, and Consumer. Key financial metrics include organic growth rates, operating margins (typically 18-22%), free cash flow conversion, and return on invested capital (ROIC). 3M is known for consistent dividend payments and R&D spending around 6% of sales.",
+                    "metadata": {"company": "MMM", "category": "overview", "sector": "industrial"}
+                },
+                {
+                    "content": "Key Performance Indicators (KPIs) in financial analysis include: Revenue (total sales), Gross Profit Margin (gross profit/revenue), Operating Margin (operating income/revenue), Net Profit Margin (net income/revenue), Earnings Per Share (EPS), Price-to-Earnings Ratio (P/E), Return on Equity (ROE), Return on Assets (ROA), Debt-to-Equity Ratio, Current Ratio, and Free Cash Flow.",
+                    "metadata": {"category": "kpis", "topic": "financial_metrics"}
+                },
+                {
+                    "content": "Financial statement analysis involves three main statements: Income Statement (shows revenue, expenses, and profit over a period), Balance Sheet (shows assets, liabilities, and equity at a point in time), and Cash Flow Statement (shows cash inflows and outflows from operating, investing, and financing activities). Key ratios include liquidity ratios, profitability ratios, and leverage ratios.",
+                    "metadata": {"category": "analysis", "topic": "financial_statements"}
+                },
+                {
+                    "content": "Quarterly earnings reports typically include: Revenue (year-over-year and quarter-over-quarter growth), Earnings Per Share (EPS), Operating margin, Net income, Cash flow from operations, and Forward guidance. Companies also discuss segment performance, market conditions, and strategic initiatives during earnings calls.",
+                    "metadata": {"category": "earnings", "topic": "quarterly_reports"}
+                },
+                {
+                    "content": "Common financial forecasting methods include: Time series analysis (using historical trends), Regression analysis (correlating with economic indicators), Scenario analysis (best/worst/expected case), Monte Carlo simulation (probabilistic modeling), and Discounted Cash Flow (DCF) models for valuation.",
+                    "metadata": {"category": "forecasting", "topic": "methods"}
+                }
+            ]
+            
+            # Process and store each piece of knowledge
+            for knowledge in financial_knowledge:
+                embedding = self._get_embedding(knowledge["content"])
+                if embedding is not None:
+                    self._save_embedding(
+                        text=knowledge["content"],
+                        embedding=embedding,
+                        metadata=knowledge["metadata"],
+                        content_type="financial_knowledge"
+                    )
+            
+            db.session.commit()
+            logging.info(f"[RAG] Initialized with {len(financial_knowledge)} financial knowledge entries")
+            
+        except Exception as e:
+            logging.error(f"[RAG] Error initializing financial knowledge: {str(e)}")
+            db.session.rollback()

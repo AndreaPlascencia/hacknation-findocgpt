@@ -17,6 +17,8 @@ class ChatBot:
         self.forecaster = FinancialForecaster()
         self.financebench_client = FinanceBenchClient()
         
+        # RAG system will be initialized when first used
+        
     def process_message(self, user_message):
         """Process user message and generate comprehensive response"""
         try:
