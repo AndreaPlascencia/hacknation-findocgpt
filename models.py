@@ -1,4 +1,4 @@
-from db_core import db
+from app import db
 from datetime import datetime
 from sqlalchemy import Text, DateTime, Float, Integer, String
 

@@ -2,14 +2,10 @@ import os
 import json
 import logging
 from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
+# Import the shared database instance
+from app import db
 
 # Create the app
 app = Flask(__name__)
@@ -41,7 +37,7 @@ chatbot = ChatBot()
 @app.route('/')
 def index():
     """Main chat interface"""
-    return render_template('simple_index.html')
+    return render_template('index_en.html')
 
 @app.route('/api/chat', methods=['POST'])
 def handle_chat():
@@ -82,12 +78,11 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    # Initialize RAG system with basic financial knowledge
+    # Initialize RAG system
     try:
         from rag_system import RAGSystem
         rag = RAGSystem()
-        rag.initialize_financial_knowledge()
-        logging.info("RAG system initialized with financial knowledge")
+        logging.info("RAG system initialized")
     except Exception as e:
         logging.error(f"Error initializing RAG system: {str(e)}")
     
