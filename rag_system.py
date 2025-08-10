@@ -18,6 +18,7 @@ def _guess_company_from_filename(name: str) -> Optional[str]:
 
 class RAGSystem:
     def __init__(self):
+        logging.info("[RAG] Inicializando sistema RAG")
         self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.embedding_model = "text-embedding-3-small"
         self.chunk_size = 500  # en palabras

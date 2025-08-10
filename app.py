@@ -8,7 +8,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 class Base(DeclarativeBase):
     pass
-
 db = SQLAlchemy(model_class=Base)
 
 # Create the app
@@ -25,7 +24,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 
 # Initialize extensions
 db.init_app(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+#socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet", ping_interval=25, ping_timeout=60)
+
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -59,6 +60,7 @@ def handle_disconnect():
 def handle_message(data):
     """Handle incoming chat messages"""
     try:
+        logging.info("Tryng to handle message")
         user_message = data.get('message', '')
         logging.info(f'Received message: {user_message}')
         
